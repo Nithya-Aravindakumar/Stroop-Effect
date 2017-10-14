@@ -1,0 +1,148 @@
+#Test a Perceptual Phenomenon
+###A Nithya
+
+In a Stroop task, participants are presented with a list of words, with each word displayed in a color of ink. The participant's task is to say out loud the color of the ink in which the word is printed. The task has two conditions: a congruent words condition, and an incongruent words condition. In the congruent words condition, the words being displayed are color words whose names match the colors in which they are printed. In the incongruent words condition, the words displayed are color words whose names do not match the colors in which they are printed. In each case, we measure the time it takes to name the ink colors in equally-sized lists. Each participant will go through and record a time from each condition.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+#importing packages
+library(ggplot2)
+library(gridExtra)
+library(dplyr)
+```
+
+###1. What is our independent variable? What is our dependent variable?
+The task condition(congruent or incongruent) is the independent variable.
+The time taken to name the colours is the dependent variable.
+
+###2. What is an appropriate set of hypotheses for this task? What kind of statistical test do you expect to perform? Justify your choices.
+
+$$ Null\ -> H_0 : \mu_C - \mu_I = 0 $$
+$$ Alternate\ -> H_A : \mu_C - \mu_I \neq 0 $$
+
+mu values are the population means. 'C' stands for congruent words condition and 'I' stands for incongruent words condition. 
+
+Null hypothesis states that the mean of congruent and incongruent word conditions will be the same that is, there will be no effect on time based on the word condition.
+
+Alternate hypothesis states that the mean of congruent and incongruent word conditions will not be the same that is, there is an effect on time based on word condition.
+
+As we do not know the population parameters and the sample size is less than 30, we shall use the t-test .
+
+###3. Report some descriptive statistics regarding this dataset. Include at least one measure of central tendency and at least one measure of variability.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE} 
+df = read.csv('stroopdata.csv')
+summary(df)
+```
+Mean for congruent words condition is 14.05 and mean for incongruent words condition is 22.02.
+
+Standard deviation of congruent words condition:
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+sqrt(var(df$Congruent))
+```
+Standard deviation of Incongruent words condition:
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+sqrt(var(df$Incongruent))
+```
+
+###4. Provide one or two visualizations that show the distribution of the sample data. Write one or two sentences noting what you observe about the plot or plots.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=4}
+
+p1 = ggplot(df, aes(df$Congruent)) + geom_histogram(binwidth = 2) +
+  scale_x_continuous(breaks = seq(0,40,2))+
+  ggtitle('Histogram of Congruent words condition') + xlab('Recorded time for Congruent')
+p2 = ggplot(df, aes(df$Incongruent)) + geom_histogram(binwidth = 2) +
+  scale_x_continuous(breaks = seq(0,40,2))+
+  ggtitle('Histogram of Incongruent words condition') + xlab('Recorded time for Incongruent')
+
+grid.arrange(p1, p2, ncol = 2)
+```
+
+There are no values between 27 and 33 in the histogram of incongruent words condition.
+
+```{r echo=FALSE, message =FALSE, warning =FALSE}
+
+
+p3 = ggplot(df, aes( x = 1, y = df$Congruent )) + 
+                        geom_jitter(alpha = 0.1 ) + 
+                        geom_boxplot(alpha = 0.2, color = 'red' )+
+                        ggtitle('Boxplot of Congruent values')+
+                        xlab('Congruent')+
+                        ylab('Recorded time')+
+                        stat_summary(fun.y = "mean", 
+                                     geom = "point", 
+                                     color = "red", 
+                                     shape = 8, 
+                                     size = 4) 
+
+p4 = ggplot(df, aes( x = 1, y = df$Incongruent )) + 
+                        geom_jitter(alpha = 0.1 ) + 
+                        geom_boxplot(alpha = 0.2, color = 'red' )+
+                        ggtitle('Boxplot of Incongruent values ')+
+                        xlab('Incongruent')+
+                        ylab('Recorded time')+
+                        stat_summary(fun.y = "mean", 
+                                     geom = "point", 
+                                     color = "red", 
+                                     shape = 8, 
+                                     size = 4) 
+grid.arrange(p3, p4, ncol = 2)
+```
+
+There are 2 outliers in the incongruent values.
+
+```{r echo=FALSE, message =FALSE, warning =FALSE}
+df$num=seq(1:24)
+ggplot(df) +
+  geom_line(aes(x = num, y = Congruent), color = 'purple')+
+  geom_line(aes(x = num, y = Incongruent), color = 'red')+
+  scale_y_continuous(breaks = seq(0,40,2))+
+  scale_x_continuous(breaks = seq(0,40,1))+
+  ylab('Recorded time')+
+  xlab('Person')+
+  ggtitle('Time taken by each person for congruent and incongruent word condition')
+  
+```
+
+Red line indicates incongruent and purple line indicates congruent.
+
+For all cases, the time taken for incongruent is higher than that of congruent.
+
+###5. Now, perform the statistical test and report your results. What is your confidence level and your critical statistic value? Do you reject the null hypothesis or fail to reject it? Come to a conclusion in terms of the experiment task. Did the results match up with your expectations?
+
+Type of test : Two tailed test
+
+n = 24
+
+Mean difference = -7.97
+
+S = 4.87
+
+Degrees of freedom = 23
+
+Confidence Interval, CI = 95%
+
+Alpha = 0.05
+
+t-critical = 2.069
+
+Standard Error of Mean(SEM) = 0.99
+
+t-statistic = -8.05
+
+t-statistic is well beyond the t-critical on the left side. So, we reject the null.
+
+The two-tailed P value is less than 0.0001. By conventional criteria, this difference is considered to be extremely statistically significant.
+
+We can conclude that there is an effect on time based on the word condition (congruent or congruent).
+
+Cohen's d = -1.64
+
+r^2 = .74
+
+###References
+
+https://en.wikipedia.org/wiki/Stroop_effect
+
+https://www.graphpad.com/quickcalcs/
+
